@@ -1,0 +1,38 @@
+{
+  "name": "telepath-logger",
+  "version": "0.0.1",
+  "description": "Capture time lapse coding video",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon --exec babel-node src/index.js -- src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LastDreamer/telepath-logger-js.git"
+  },
+  "keywords": [
+    "logger",
+    "time",
+    "lapse",
+    "video"
+  ],
+  "author": "Oleg Kravchenko <oleg.kravchenko88@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LastDreamer/telepath-logger-js/issues"
+  },
+  "homepage": "https://github.com/LastDreamer/telepath-logger-js#readme",
+  "dependencies": {
+    "active-win": "^2.0.0",
+    "electron": "^1.6.11",
+    "global-keypress": "0.0.8",
+    "iohook": "^0.1.9",
+    "moment": "^2.18.1",
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-stage-0": "^6.24.1"
+  }
+}
