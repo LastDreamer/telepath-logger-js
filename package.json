@@ -25,14 +25,18 @@
   "homepage": "https://github.com/LastDreamer/telepath-logger-js#readme",
   "dependencies": {
     "active-win": "^2.0.0",
-    "electron": "^1.6.11",
+    "express": "^4.15.3",
     "global-keypress": "0.0.8",
     "iohook": "^0.1.9",
     "moment": "^2.18.1",
+    "socket.io": "^2.0.3",
+    "socket.io-client": "^2.0.3"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-preset-env": "^1.6.0",
-    "babel-preset-stage-0": "^6.24.1"
+    "babel-preset-stage-0": "^6.24.1",
+    "webpack-dev-middleware": "^1.11.0",
+    "webpack-hot-middleware": "^2.18.2"
   }
 }
