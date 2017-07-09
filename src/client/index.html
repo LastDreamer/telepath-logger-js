@@ -1,6 +1,31 @@
 <script src="/socket.io/socket.io.js"></script>
-<script>
-  var socket = io();
-</script>
+<h1>Активное окно: <span id="app"></span></h1>
+<h1>Нажатий клавиатуры: <span id="keystrokes"></span></h1>
+<h1>Последние буквы: <span id="chars"></span></h1>
+<h1>Переключения окон: <span id="windowSwitches"></span></h1>
 
-<h1>Hello world</h1>
+<script>
+ var socket = io();
+ var appWrapper = document.getElementById('app');
+ var keystrokesWrapper = document.getElementById('keystrokes');
+ var charsWrapper = document.getElementById('chars');
+ var windowSwithesWrapper = document.getElementById('windowSwitches');
+ var chars = '';
+
+ socket.on('changedApp', function(app) {
+   appWrapper.innerText = app;
+ });
+
+ socket.on('changedKeystrokes', function(number) {
+   keystrokesWrapper.innerText = number;
+ });
+
+ socket.on('lastChar', function(key) {
+   chars = (chars+key).slice(-60);
+   charsWrapper.innerText = chars;
+ });
+
+ socket.on('shitchWindow', function(number) {
+   windowSwithesWrapper.innerText = number;
+ });
+</script>
