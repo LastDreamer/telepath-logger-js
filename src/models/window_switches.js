@@ -1,5 +1,5 @@
 import { DataTypes } from 'sequelize';
-import db from './init';
+import db from './_init';
 
 const WindowSwitch = db.define('switches', {
   windowNane: DataTypes.STRING,

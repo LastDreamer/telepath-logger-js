@@ -1,4 +1,4 @@
-import db from './init';
+import db from './_init';
 
 const WorkSession = db.define('sessions', {}, {
   underscored: true,
