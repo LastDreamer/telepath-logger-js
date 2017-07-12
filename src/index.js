@@ -10,23 +10,20 @@ const io = socket(server);
 
 let currentApp = '';
 let keystrokes = 0;
+let clicks = 0;
 let windowSwitches = 0;
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/client/index.html');
 });
 
 io.on('connection', function(socket){
-  console.log('a user connected');
-  socket.on('disconnect', function(){
-    console.log('user disconnected');
-  });
   socket.emit('changedApp', currentApp);
-  socket.emit('changedApp', currentApp);
+  socket.emit('changedKeystrokes', keystrokes);
   socket.emit('shitchWindow', windowSwitches);
+  socket.emit('clicksChange', clicks);
 });
 
 server.listen(3000, function(){
-  console.log('listening on *:3000');
 });
 
 
@@ -35,7 +32,6 @@ server.listen(3000, function(){
 Keyboard.init((key) => {
   activeWin().then(result => {
     if (result.app != currentApp) {
-      console.log(result.app);
       currentApp = result.app;
       io.emit('changedApp', result.app);
       windowSwitches++;
@@ -55,9 +51,10 @@ Mouse.init((event) => {
     if (result.app != currentApp) {
       currentApp = result.app;
       io.emit('changedApp', result.app);
-      console.log(result.title);
       windowSwitches++;
       io.emit('shitchWindow', windowSwitches);
     }
+    clicks++;
+    io.emit('clicksChange', clicks);
   });
 });
