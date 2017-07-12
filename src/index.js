@@ -1,33 +1,53 @@
 import activeWin from 'active-win';
-import { Keyboard, Mouse } from './handlers';
-import { Event, WorkSession, WindowSwitch } from './models';
-import socket from 'socket.io';
-import { io } from './server';
+import Handlers from './handlers';
+import Models from './models';
+import io from './server';
 
-
-// Перезапись таблиц
-// Event.sync({force: true});
-// WorkSession.sync({force: true});
-// WindowSwitch.sync({force: true});
-
+const workdayStart = new Date();
+workdayStart.setHours(4, 0, 0, 0);
+// const sessionStart = new Date();
 
 let currentApp = '';
 let keystrokes = 0;
-Event.findAndCount({ where: { type: 'keystroke' } }).then(result => {
+
+Models.Event.findAndCount({
+  where: {
+    type: 'keystroke',
+    time: {
+      gt: workdayStart,
+    },
+  },
+}).then((result) => {
   keystrokes = result.count;
-}, error => console.log(error));
+  io.emit('changedKeystrokes', keystrokes);
+});
 
 let clicks = 0;
-Event.findAndCount({ where: { type: 'mouseclick' } }).then(result => {
+Models.Event.findAndCount({
+  where: {
+    type: 'mouseclick',
+    time: {
+      gt: workdayStart,
+    },
+  },
+}).then((result) => {
   clicks = result.count;
-}, error => console.log(error));
+  io.emit('clicksChange', clicks);
+});
 
 let windowSwitches = 0;
-WindowSwitch.findAndCount().then(result => {
+Models.WindowSwitch.findAndCount({
+  where: {
+    time: {
+      gt: workdayStart,
+    },
+  },
+}).then((result) => {
   windowSwitches = result.count;
-}, error => console.log(error));
+  io.emit('shitchWindow', windowSwitches);
+});
 
-io.on('connection', function(socket){
+io.on('connection', (socket) => {
   socket.emit('changedApp', currentApp);
   socket.emit('changedKeystrokes', keystrokes);
   socket.emit('shitchWindow', windowSwitches);
@@ -35,45 +55,45 @@ io.on('connection', function(socket){
 });
 
 
-Keyboard.init((key) => {
-  activeWin().then(result => {
-    if (result.app != currentApp) {
+Handlers.keyboard((key) => {
+  activeWin().then((result) => {
+    if (result.app !== currentApp) {
       currentApp = result.app;
       io.emit('changedApp', result.app);
-      windowSwitches++;
+      windowSwitches += 1;
       io.emit('shitchWindow', windowSwitches);
-      WindowSwitch.create({
-        windowNane: result.app
+      Models.WindowSwitch.create({
+        windowNane: result.app,
       });
     }
   });
 
   if (key) {
-    keystrokes++;
+    keystrokes += 1;
     io.emit('changedKeystrokes', keystrokes);
     io.emit('lastChar', key);
-    Event.create({
+    Models.Event.create({
       type: 'keystroke',
-      meta: { key: key }
+      meta: { key },
     });
   }
 });
 
-Mouse.init((event) => {
-  activeWin().then(result => {
-    if (result.app != currentApp) {
+Handlers.mouse((/* event */) => {
+  activeWin().then((result) => {
+    if (result.app !== currentApp) {
       currentApp = result.app;
       io.emit('changedApp', result.app);
-      windowSwitches++;
+      windowSwitches += 1;
       io.emit('shitchWindow', windowSwitches);
-      WindowSwitch.create({
-        windowNane: result.app
+      Models.WindowSwitch.create({
+        windowNane: result.app,
       });
     }
-    clicks++;
+    clicks += 1;
     io.emit('clicksChange', clicks);
-    Event.create({
-      type: 'mouseclick'
+    Models.Event.create({
+      type: 'mouseclick',
     });
   });
 });

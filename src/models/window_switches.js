@@ -1,14 +1,16 @@
 import { DataTypes } from 'sequelize';
-import { db } from './init';
+import db from './init';
 
-export const WindowSwitch = db.define('switches', {
+const WindowSwitch = db.define('switches', {
   windowNane: DataTypes.STRING,
   time: {
     type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW
-  }
+    defaultValue: DataTypes.NOW,
+  },
 }, {
-  timestamps: false
+  timestamps: false,
 });
 
 WindowSwitch.removeAttribute('id');
+
+export default WindowSwitch;

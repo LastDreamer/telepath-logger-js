@@ -1,44 +1,42 @@
 import ioHook from 'iohook';
 
-export const Mouse = {
-  init : callback => {
-    // ioHook.on("mousemove", event => {
-    //   callback(event);
-    // });
+const mouse = (callback) => {
+  // ioHook.on("mousemove", event => {
+  //   callback(event);
+  // });
 
-    // ioHook.on("mouseup", event => {
-    //   callback(event);
-    // });
+  // ioHook.on("mouseup", event => {
+  //   callback(event);
+  // });
 
-    // ioHook.on("mousewheel", event => {
-    //   callback(event);
-    // });
+  // ioHook.on("mousewheel", event => {
+  //   callback(event);
+  // });
 
-    ioHook.on('mousedoubleclick', event => {
-      callback(event);
-    });
+  ioHook.on('mousedoubleclick', (event) => {
+    callback(event);
+  });
 
-    ioHook.on('mouseclick', event => {
-      callback(event);
-    });
+  ioHook.on('mouseclick', (event) => {
+    callback(event);
+  });
 
-    ioHook.start();
-  }
-}
+  ioHook.start();
+};
 
 // Catch exit
 process.stdin.resume();
-process.on('exit', function(code) {
-  //код сюда
-  console.log('exit');
+process.on('exit', (code) => {
   ioHook.stop();
   ioHook.unload();
   process.exit(code);
 });
-process.on('SIGINT', function() {
+process.on('SIGINT', () => {
   process.exit(0);
 });
-process.on('uncaughtException', function(err) {
-  console.dir(err, { depth: null });
+process.on('uncaughtException', (err) => {
+  console.dir(err, { depth: null }); //eslint-disable-line
   process.exit(1);
 });
+
+export default mouse;

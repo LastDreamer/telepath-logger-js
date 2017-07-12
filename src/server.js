@@ -4,12 +4,14 @@ import http from 'http';
 
 const app = express();
 const server = http.Server(app);
-export const io = socket(server);
+const io = socket(server);
 
-app.get('/', function(req, res){
-  res.sendFile(__dirname + '/client/index.html');
+app.get('/', (req, res) => {
+  res.sendFile(`${__dirname}/client/index.html`);
 });
 
-server.listen(3000, function(){
-  console.log('Server started');
+server.listen(3000, () => {
+  console.log('Server started on http://localhost:3000'); //eslint-disable-line
 });
+
+export default io;

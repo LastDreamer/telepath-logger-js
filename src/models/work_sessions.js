@@ -1,9 +1,10 @@
-import { DataTypes } from 'sequelize';
-import { db } from './init';
+import db from './init';
 
-export const WorkSession = db.define('sessions', {}, {
-  underscored: true
+const WorkSession = db.define('sessions', {}, {
+  underscored: true,
 });
 
 WorkSession.removeAttribute('id');
+
+export default WorkSession;
 
