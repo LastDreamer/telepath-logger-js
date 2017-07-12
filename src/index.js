@@ -1,20 +1,31 @@
 import activeWin from 'active-win';
 import { Keyboard, Mouse } from './handlers';
-import express from 'express';
+import { Event, WorkSession, WindowSwitch } from './models';
 import socket from 'socket.io';
-import http from 'http';
+import { io } from './server';
 
-const app = express();
-const server = http.Server(app);
-const io = socket(server);
+
+// Перезапись таблиц
+// Event.sync({force: true});
+// WorkSession.sync({force: true});
+// WindowSwitch.sync({force: true});
+
 
 let currentApp = '';
 let keystrokes = 0;
+Event.findAndCount({ where: { type: 'keystroke' } }).then(result => {
+  keystrokes = result.count;
+}, error => console.log(error));
+
 let clicks = 0;
+Event.findAndCount({ where: { type: 'mouseclick' } }).then(result => {
+  clicks = result.count;
+}, error => console.log(error));
+
 let windowSwitches = 0;
-app.get('/', function(req, res){
-  res.sendFile(__dirname + '/client/index.html');
-});
+WindowSwitch.findAndCount().then(result => {
+  windowSwitches = result.count;
+}, error => console.log(error));
 
 io.on('connection', function(socket){
   socket.emit('changedApp', currentApp);
@@ -23,12 +34,7 @@ io.on('connection', function(socket){
   socket.emit('clicksChange', clicks);
 });
 
-server.listen(3000, function(){
-});
 
-
-
-//Logging handlers
 Keyboard.init((key) => {
   activeWin().then(result => {
     if (result.app != currentApp) {
@@ -36,6 +42,9 @@ Keyboard.init((key) => {
       io.emit('changedApp', result.app);
       windowSwitches++;
       io.emit('shitchWindow', windowSwitches);
+      WindowSwitch.create({
+        windowNane: result.app
+      });
     }
   });
 
@@ -43,6 +52,10 @@ Keyboard.init((key) => {
     keystrokes++;
     io.emit('changedKeystrokes', keystrokes);
     io.emit('lastChar', key);
+    Event.create({
+      type: 'keystroke',
+      meta: { key: key }
+    });
   }
 });
 
@@ -53,8 +66,14 @@ Mouse.init((event) => {
       io.emit('changedApp', result.app);
       windowSwitches++;
       io.emit('shitchWindow', windowSwitches);
+      WindowSwitch.create({
+        windowNane: result.app
+      });
     }
     clicks++;
     io.emit('clicksChange', clicks);
+    Event.create({
+      type: 'mouseclick'
+    });
   });
 });
