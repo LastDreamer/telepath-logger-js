@@ -14,4 +14,6 @@ const Event = db.define('events', {
 
 Event.removeAttribute('id');
 
+// Models.Event.sync({force: true});
+
 export default Event;

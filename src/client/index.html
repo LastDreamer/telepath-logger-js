@@ -12,6 +12,8 @@
     <p id="clicks"></p>
     <h3>Переключений окон:</h3>
     <p id="windowSwitches"></p>
+    <h3>Время рабочей сессии:</h3>
+    <p id="workSession"></p>
 
       <script>
        var socket = io();
@@ -20,6 +22,7 @@
        var charsWrapper = document.getElementById('chars');
        var windowSwithesWrapper = document.getElementById('windowSwitches');
        var clicksWrapper = document.getElementById('clicks');
+       var sessionWrapper = document.getElementById('workSession');
        var chars = '';
 
        socket.on('changedApp', function(app) {
@@ -41,6 +44,10 @@
 
        socket.on('clicksChange', function(number) {
          clicksWrapper.innerText = number;
+       });
+
+       socket.on('changeSession', function(number) {
+         sessionWrapper.innerText = number;
        });
       </script>
   </body>

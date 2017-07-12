@@ -2,10 +2,31 @@ import activeWin from 'active-win';
 import Handlers from './handlers';
 import Models from './models';
 import io from './server';
+import formatTimestamp from './helpers/formatTimestamp';
 
 const workdayStart = new Date();
-workdayStart.setHours(4, 0, 0, 0);
-// const sessionStart = new Date();
+workdayStart.setHours(workdayStart.getHours() - 4);
+workdayStart.setHours(0, 0, 0, 0);
+
+let sessionStart = new Date().getTime();
+let sessionEnd = new Date().getTime();
+
+const checkSession = () => {
+  const now = new Date().getTime();
+
+  if (now > sessionEnd + 300000) {
+    Models.WorkSession.create({
+      time_start: new Date(sessionStart),
+      time_end: new Date(sessionEnd),
+      duration: sessionEnd - sessionStart,
+    });
+    sessionStart = now;
+    sessionEnd = now;
+  } else {
+    sessionEnd = now;
+    io.emit('changeSession', formatTimestamp(sessionEnd - sessionStart));
+  }
+};
 
 let currentApp = '';
 let keystrokes = 0;
@@ -54,7 +75,6 @@ io.on('connection', (socket) => {
   socket.emit('clicksChange', clicks);
 });
 
-
 Handlers.keyboard((key) => {
   activeWin().then((result) => {
     if (result.app !== currentApp) {
@@ -76,10 +96,11 @@ Handlers.keyboard((key) => {
       type: 'keystroke',
       meta: { key },
     });
+    checkSession();
   }
 });
 
-Handlers.mouse((/* event */) => {
+Handlers.mouse((event) => {
   activeWin().then((result) => {
     if (result.app !== currentApp) {
       currentApp = result.app;
@@ -90,10 +111,13 @@ Handlers.mouse((/* event */) => {
         windowNane: result.app,
       });
     }
-    clicks += 1;
-    io.emit('clicksChange', clicks);
-    Models.Event.create({
-      type: 'mouseclick',
-    });
+    if (event.type === 'mouseclick') {
+      clicks += 1;
+      io.emit('clicksChange', clicks);
+      Models.Event.create({
+        type: 'mouseclick',
+      });
+    }
+    checkSession();
   });
 });

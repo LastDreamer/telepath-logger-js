@@ -1,19 +1,11 @@
 import ioHook from 'iohook';
 
 const mouse = (callback) => {
-  // ioHook.on("mousemove", event => {
-  //   callback(event);
-  // });
+  ioHook.on('mousemove', (event) => {
+    callback(event);
+  });
 
-  // ioHook.on("mouseup", event => {
-  //   callback(event);
-  // });
-
-  // ioHook.on("mousewheel", event => {
-  //   callback(event);
-  // });
-
-  ioHook.on('mousedoubleclick', (event) => {
+  ioHook.on('mousewheel', (event) => {
     callback(event);
   });
 

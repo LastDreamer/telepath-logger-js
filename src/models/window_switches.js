@@ -13,4 +13,6 @@ const WindowSwitch = db.define('switches', {
 
 WindowSwitch.removeAttribute('id');
 
+// Models.WindowSwitch.sync({force: true});
+
 export default WindowSwitch;
