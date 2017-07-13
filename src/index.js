@@ -10,22 +10,39 @@ workdayStart.setHours(0, 0, 0, 0);
 
 let sessionStart = new Date().getTime();
 let sessionEnd = new Date().getTime();
+let workToday = 0;
+
+Models.WorkSession.findAll({
+  where: {
+    time_start: {
+      gt: workdayStart,
+    },
+  },
+}).then((sessions) => {
+  sessions.forEach((session) => {
+    workToday += session.get('duration');
+  });
+  io.emit('changeWorkToday', formatTimestamp(workToday));
+});
 
 const checkSession = () => {
   const now = new Date().getTime();
+  const duration = sessionEnd - sessionStart;
 
   if (now > sessionEnd + 300000) {
     Models.WorkSession.create({
       time_start: new Date(sessionStart),
       time_end: new Date(sessionEnd),
-      duration: sessionEnd - sessionStart,
+      duration,
     });
     sessionStart = now;
     sessionEnd = now;
+    workToday += duration;
   } else {
     sessionEnd = now;
-    io.emit('changeSession', formatTimestamp(sessionEnd - sessionStart));
   }
+  io.emit('changeSession', formatTimestamp(duration));
+  io.emit('changeWorkToday', formatTimestamp(workToday + duration));
 };
 
 let currentApp = '';
