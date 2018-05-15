@@ -14,4 +14,6 @@ server.listen(3000, () => {
   console.log('Server started on http://localhost:3000'); //eslint-disable-line
 });
 
+console.log('!!!!!!111');
+
 export default io;

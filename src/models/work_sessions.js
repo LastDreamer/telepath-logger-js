@@ -11,6 +11,7 @@ const WorkSession = db.define('sessions', {
     defaultValue: DataTypes.NOW,
   },
   duration: DataTypes.INTEGER,
+  project: DataTypes.STRING,
 }, {
   underscored: true,
   timestamps: false,

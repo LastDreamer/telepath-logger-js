@@ -1,12 +1,15 @@
 import activeWin from 'active-win';
-import Handlers from './handlers';
-import Models from './models';
 import io from './server';
 import formatTimestamp from './helpers/formatTimestamp';
+import Handlers from './handlers';
+import Models from './models';
 
 const workdayStart = new Date();
 workdayStart.setHours(workdayStart.getHours() - 4);
-workdayStart.setHours(0, 0, 0, 0);
+workdayStart.setHours(4, 0, 0, 0);
+
+const project = 'ZenFilms';
+//const project = 'SDVOR';
 
 let sessionStart = new Date().getTime();
 let sessionEnd = new Date().getTime();
@@ -17,6 +20,7 @@ Models.WorkSession.findAll({
     time_start: {
       gt: workdayStart,
     },
+    project,
   },
 }).then((sessions) => {
   sessions.forEach((session) => {
@@ -29,11 +33,12 @@ const checkSession = () => {
   const now = new Date().getTime();
   const duration = sessionEnd - sessionStart;
 
-  if (now > sessionEnd + 300000) {
+  if (now > sessionEnd + 120000) {
     Models.WorkSession.create({
       time_start: new Date(sessionStart),
       time_end: new Date(sessionEnd),
       duration,
+      project,
     });
     sessionStart = now;
     sessionEnd = now;
